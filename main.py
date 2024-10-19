@@ -2,7 +2,7 @@ import openpyxl
 
 
 def summarize_data():
-    wb = openpyxl.load_workbook(r'D:\工程6月.xlsx')  # 替换为实际的Excel文件路径
+    wb = openpyxl.load_workbook(r'D:\Work file\保存\工程7月.xlsx')  # 替换为实际的Excel文件路径
     ws = wb['总表']  # 将 "Sheet1" 替换为实际的工作表名称
 
     last_row = ws.max_row
