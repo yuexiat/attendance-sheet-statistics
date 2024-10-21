@@ -5,7 +5,7 @@ from openpyxl.styles import Alignment
 def summarize_data(n):
     wb = openpyxl.load_workbook(r'D:\Work file\表格\工程'+str(n)+'月.xlsx')  # 替换为实际的Excel文件路径
     ws = wb['总表']  # 将 "Sheet1" 替换为实际的工作表名称
-    wb_hz = openpyxl.load_workbook(r'D:\Work file\表格\考勤模板.xlsx')  # 替换为实际的Excel文件路径
+    wb_hz = openpyxl.load_workbook(r'.\考勤模板.xlsx')  # 替换为实际的Excel文件路径
     ws_hz = wb_hz['Sheet1']  # 将 "Sheet1" 替换为实际的工作表名称
     last_row = ws.max_row
 
@@ -32,7 +32,8 @@ def summarize_data(n):
 
             ws_hz.cell(2+(j-5)*7,2).value = name
 
-            column1 = 2*n+2
+
+            column1 = n+3
 
             ws_hz.cell(2+(j-5)*7, column1).value = attendance
             ws_hz.cell(2+(j-5)*7, column1).alignment = Alignment(wrapText=True)
@@ -73,7 +74,7 @@ def summarize_data1(n):
             name = ws_hz.cell(row=j, column=2).value
             # print(name,1)
             row_number_name = find_row_by_name(ws, 2, name) #以模版姓名为基准
-            if row_number_name is None :
+            if row_number_name is None:
                 continue
             attendance = ws.cell(row=row_number_name, column=3).value
             actual_time = ws.cell(row=row_number_name, column=4).value
@@ -95,10 +96,11 @@ def summarize_data1(n):
 
             ws_hz.cell(j,2).value = name
 
+
             # ws_hz.cell(j, 3).value = '应出勤:'+str(attendance)+'\n实际出勤:'+str(actual_time)+'\n加班时数:'+str(overtime)+'\n总时数:'+str(total_hours)+'\n迟到:'+str(late_count)+'\n早退:'+str(early_leave_count)+'\n无打卡次数:'+str(no_punch_count)
 
 
-            column1 = 2*n+2
+            column1 = n+3
 
             ws_hz.cell(j, column1).value = attendance
             ws_hz.cell(j, column1).alignment = Alignment(wrapText=True)
@@ -147,7 +149,37 @@ def find_column_by_name(sheet, row, name):
     return None  # Return None if the name is not found
 
 
+def append_name():
+    wb_hz = openpyxl.load_workbook(r'D:\output_file.xlsx')  # 替换为实际的Excel文件路径
+    ws_hz = wb_hz['Sheet1']  # 将 "Sheet1" 替换为实际的工作表名称
+    last_row = ws_hz.max_row
+
+    wb1_hz = openpyxl.load_workbook(r'.\人员和组.xlsx')  # 替换为实际的Excel文件路径
+    ws1_hz = wb1_hz['Sheet1']  # 将 "Sheet1" 替换为实际的工作表名称
+
+    for row_index in range(2,last_row+1,7): #第二行开始，每间隔7行
+        name = ws_hz.cell(row=row_index, column=2).value  #初始赋值名字
+        zb = find_row_by_name(ws1_hz, 2, name)  #查找组所在的行
+
+        if zb is not None: #把查到的组别赋值到output里
+            ws_hz.cell(row_index, 1).value = ws1_hz.cell(zb, 1).value
+
+        if name is not None:
+            for row_name in range(1,7):#重复6次，1-6
+                ws_hz.cell(row_index+row_name, 2).value = name
+                if zb is not None:#把查到的组别赋值到output里
+                    ws_hz.cell(row_index+row_name, 1).value = ws1_hz.cell(zb, 1).value
+
+
+
+
+
+
+    wb_hz.save(r'D:\output_file.xlsx')  # 替换为输出结果的Excel文件路径
+    wb_hz.close()
+
 if __name__ == '__main__':
     summarize_data(9)#最后一个月的月份
     for i in range(8,6,-1):
         summarize_data1(i)
+    append_name()
